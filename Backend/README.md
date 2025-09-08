@@ -158,3 +158,135 @@ const response = await fetch('http://localhost:3000/users/register', {
 const data = await response.json();
 console.log(data);
 ```
+
+## User Login Endpoint
+
+### POST `/users/login`
+
+Authenticates an existing user and returns a JWT token along with the user details.
+
+#### Description
+This endpoint validates user credentials. On success, it generates a JWT token, sets it as a cookie named `token`, and returns the token and user payload in the response body.
+
+#### Request Body
+
+The request body must be sent as JSON with the following structure:
+
+```json
+{
+  "email": "string",
+  "password": "string"
+}
+```
+
+#### Field Requirements
+
+| Field | Type | Required | Validation Rules |
+|-------|------|----------|------------------|
+| `email` | String | Yes | Valid email format |
+| `password` | String | Yes | Minimum 6 characters |
+
+#### Example Request
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "securepassword123"
+}
+```
+
+#### Response
+
+##### Success Response (200 OK)
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "_id": "64a1b2c3d4e5f6789abcdef0",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "socketId": null
+  }
+}
+```
+
+On success, a cookie named `token` is also set on the response.
+
+##### Error Responses
+
+**400 Bad Request - Validation Errors**
+```json
+{
+  "errors": [
+    {
+      "type": "field",
+      "msg": "Invalid Email",
+      "path": "email",
+      "location": "body"
+    },
+    {
+      "type": "field",
+      "msg": "Password must be at least 6 characters long",
+      "path": "password",
+      "location": "body"
+    }
+  ]
+}
+```
+
+**401 Unauthorized - Invalid Credentials**
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+#### Status Codes
+
+| Code | Description |
+|------|-------------|
+| 200 | Login successful |
+| 400 | Bad request (validation errors) |
+| 401 | Unauthorized (invalid email or password) |
+| 500 | Internal server error |
+
+#### Authentication
+
+- **Required**: No (this is a login endpoint)
+- **Token**: Returns JWT token on success and sets a `token` cookie
+- **Token Expiry**: 24 hours
+
+#### Example cURL Request
+
+```bash
+curl -X POST http://localhost:3000/users/login \
+  -H "Content-Type: application/json" \
+  -c cookies.txt \
+  -d '{
+    "email": "john.doe@example.com",
+    "password": "securepassword123"
+  }'
+```
+
+#### Example JavaScript Fetch Request
+
+```javascript
+const response = await fetch('http://localhost:3000/users/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  credentials: 'include', // receive set-cookie
+  body: JSON.stringify({
+    email: 'john.doe@example.com',
+    password: 'securepassword123'
+  })
+});
+
+const data = await response.json();
+console.log(data);
+```
