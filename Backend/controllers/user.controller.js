@@ -1,7 +1,7 @@
-const userModel = require('../models/user.model');
-const userService = require('../services/user.service');
-const { validationResult } = require('express-validator');
-const blackListTokenModel = require('../models/blackListToken.model');
+const userModel = require("../models/user.model");
+const userService = require("../services/user.service");
+const { validationResult } = require("express-validator");
+const blackListTokenModel = require("../models/blackListToken.model");
 
 module.exports.registerUser = async (req, res, next) => {
   //! If there are errors, then it will come in request too.

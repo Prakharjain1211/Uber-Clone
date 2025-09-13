@@ -290,3 +290,221 @@ const response = await fetch('http://localhost:3000/users/login', {
 const data = await response.json();
 console.log(data);
 ```
+
+## User Profile Endpoint
+
+### GET `/users/profile`
+
+Retrieves the authenticated user's profile information.
+
+#### Description
+This endpoint returns the current authenticated user's profile details. It requires a valid JWT token either in the Authorization header or as a cookie.
+
+#### Authentication
+- **Required**: Yes
+- **Token Location**: Cookie (`token`) or Authorization header (`Bearer <token>`)
+- **Token Validation**: JWT verification and blacklist check
+
+#### Request Headers
+
+| Header | Type | Required | Description |
+|--------|------|----------|-------------|
+| `Authorization` | String | No* | Bearer token (if not using cookie) |
+| `Cookie` | String | No* | `token=<jwt_token>` (if not using header) |
+
+*Either Authorization header or Cookie must be provided
+
+#### Example Request Headers
+
+**Using Authorization Header:**
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Using Cookie:**
+```
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+#### Response
+
+##### Success Response (200 OK)
+
+```json
+{
+  "_id": "64a1b2c3d4e5f6789abcdef0",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com",
+  "socketId": null
+}
+```
+
+##### Error Responses
+
+**401 Unauthorized - No Token**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+**401 Unauthorized - Invalid/Expired Token**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+**401 Unauthorized - Blacklisted Token**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+#### Status Codes
+
+| Code | Description |
+|------|-------------|
+| 200 | Profile retrieved successfully |
+| 401 | Unauthorized (missing, invalid, or blacklisted token) |
+| 500 | Internal server error |
+
+#### Example cURL Request
+
+```bash
+# Using Authorization header
+curl -X GET http://localhost:3000/users/profile \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+# Using cookie
+curl -X GET http://localhost:3000/users/profile \
+  -H "Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+#### Example JavaScript Fetch Request
+
+```javascript
+// Using Authorization header
+const response = await fetch('http://localhost:3000/users/profile', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  }
+});
+
+// Using cookie (if token was set during login)
+const response = await fetch('http://localhost:3000/users/profile', {
+  method: 'GET',
+  credentials: 'include'
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+## User Logout Endpoint
+
+### GET `/users/logout`
+
+Logs out the authenticated user by invalidating their token.
+
+#### Description
+This endpoint logs out the current user by clearing the authentication cookie and adding the token to a blacklist to prevent further use. The token becomes invalid immediately after logout.
+
+#### Authentication
+- **Required**: Yes
+- **Token Location**: Cookie (`token`) or Authorization header (`Bearer <token>`)
+- **Token Validation**: JWT verification and blacklist check
+
+#### Request Headers
+
+| Header | Type | Required | Description |
+|--------|------|----------|-------------|
+| `Authorization` | String | No* | Bearer token (if not using cookie) |
+| `Cookie` | String | No* | `token=<jwt_token>` (if not using header) |
+
+*Either Authorization header or Cookie must be provided
+
+#### Response
+
+##### Success Response (200 OK)
+
+```json
+{
+  "message": "Logged out"
+}
+```
+
+##### Error Responses
+
+**401 Unauthorized - No Token**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+**401 Unauthorized - Invalid/Expired Token**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+**401 Unauthorized - Blacklisted Token**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+#### Status Codes
+
+| Code | Description |
+|------|-------------|
+| 200 | Logout successful |
+| 401 | Unauthorized (missing, invalid, or blacklisted token) |
+| 500 | Internal server error |
+
+#### Notes
+
+- The token is immediately added to a blacklist and cannot be used again
+- The `token` cookie is cleared from the client
+- After logout, the user must log in again to access protected endpoints
+
+#### Example cURL Request
+
+```bash
+# Using Authorization header
+curl -X GET http://localhost:3000/users/logout \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+# Using cookie
+curl -X GET http://localhost:3000/users/logout \
+  -H "Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+#### Example JavaScript Fetch Request
+
+```javascript
+// Using Authorization header
+const response = await fetch('http://localhost:3000/users/logout', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  }
+});
+
+// Using cookie (if token was set during login)
+const response = await fetch('http://localhost:3000/users/logout', {
+  method: 'GET',
+  credentials: 'include'
+});
+
+const data = await response.json();
+console.log(data);
+```
