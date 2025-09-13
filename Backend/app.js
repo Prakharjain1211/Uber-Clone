@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 const express = require('express');
 const cors = require('cors');
 const userRoutes = require('./routes/user.routes');
+const captainRoutes = require('./routes/captain.routes');
 const connectToDb = require('./db/db');
 const cookieParser = require('cookie-parser');
 
@@ -23,5 +24,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/users', userRoutes);
+app.use('/captains', captainRoutes);
 
 module.exports = app;
